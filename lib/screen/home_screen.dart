@@ -17,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   DishController dishController = Get.find<DishController>();
+  
 
   @override
   void initState() {
@@ -46,8 +47,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             letterSpacing: 1.5,
                             fontWeight: FontWeight.bold)),
                   )
-                : SingleChildScrollView(
-                    child: Column(
+                : Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Wrap(
+                      spacing: SizeConfig.screenWidth! * 0.0245,
+                      runSpacing: SizeConfig.screenWidth! * 0.03,
                       children: dishController.dishList
                           .map(
                             (e) => DishCard(

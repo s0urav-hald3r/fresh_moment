@@ -35,9 +35,8 @@ class DishController extends GetxController {
 
   Future deleteDish(String id) async {
     loading.value = true;
-    Dish dish = dishList.firstWhere((element) => element.id == id);
-    dishList.remove(dish);
-    storageList.remove(dish.toMap());
+    dishList.removeWhere(((element) => element.id == id));
+    storageList.removeWhere(((element) => element['id'] == id));
     await storageBox.write('dishes', storageList);
     Future.delayed(const Duration(milliseconds: 500), (() {
       loading.value = false;

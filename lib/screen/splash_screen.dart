@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fresh_moment/controller/cart_controller.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
@@ -17,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Get.put(DishController());
+    Get.put(CartController());
     Future.delayed(
         const Duration(seconds: 3),
         (() => Navigator.pushAndRemoveUntil(
