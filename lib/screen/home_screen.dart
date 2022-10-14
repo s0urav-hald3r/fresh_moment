@@ -37,6 +37,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: SizeConfig.screenWidth! * 0.05,
                   letterSpacing: 1.5,
                   fontWeight: FontWeight.bold)),
+          leading: Icon(
+            Icons.circle_rounded,
+            color: cartController.deviceConnected.value
+                ? Colors.green
+                : Colors.red,
+            size: SizeConfig.screenWidth! * 0.06,
+          ),
           actions: [
             IconButton(
               onPressed: () {
@@ -90,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   FloatingActionButton.extended(
                       heroTag: 'cancelTag',
                       onPressed: () {
-                        cartController.reserCart();
+                        cartController.resetCart();
                       },
                       label: Row(
                         children: [
@@ -110,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Gap(20),
                   FloatingActionButton.extended(
                       heroTag: 'cartTag',
-                      onPressed: () {},
+                      onPressed: (() => cartController.generateBill()),
                       label: Row(
                         children: [
                           Text(

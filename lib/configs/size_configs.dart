@@ -21,4 +21,6 @@ class SizeConfig {
     safeAreaTop = topPadding;
     safeAreaBottom = bottomPadding;
   }
+
+  static const bluetoothDeviceDetails = "bluetooth_device_details";
 }
