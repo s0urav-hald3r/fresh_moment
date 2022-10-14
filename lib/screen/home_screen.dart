@@ -6,6 +6,7 @@ import 'package:fresh_moment/widget/loader.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
+import '../controller/cart_controller.dart';
 import '../widget/dish_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   DishController dishController = Get.find<DishController>();
-  
+  CartController cartController = Get.find<CartController>();
 
   @override
   void initState() {
@@ -36,6 +37,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: SizeConfig.screenWidth! * 0.05,
                   letterSpacing: 1.5,
                   fontWeight: FontWeight.bold)),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const AddDish()));
+              },
+              icon: Icon(
+                Icons.add,
+                size: SizeConfig.screenWidth! * 0.06,
+              ),
+            )
+          ],
         ),
         body: dishController.loading.value
             ? const Center(child: Loader())
@@ -47,40 +60,98 @@ class _HomeScreenState extends State<HomeScreen> {
                             letterSpacing: 1.5,
                             fontWeight: FontWeight.bold)),
                   )
-                : Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Wrap(
-                      spacing: SizeConfig.screenWidth! * 0.0245,
-                      runSpacing: SizeConfig.screenWidth! * 0.03,
-                      children: dishController.dishList
-                          .map(
-                            (e) => DishCard(
-                              dish: e,
-                            ),
-                          )
-                          .toList(),
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          left: 10,
+                          right: 10,
+                          top: 10,
+                          bottom: cartController.cartLength > 0
+                              ? SizeConfig.screenWidth! * 0.4
+                              : 10),
+                      child: Wrap(
+                        spacing: SizeConfig.screenWidth! * 0.0245,
+                        runSpacing: SizeConfig.screenWidth! * 0.03,
+                        children: dishController.dishList
+                            .map(
+                              (e) => DishCard(
+                                dish: e,
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ),
-        floatingActionButton: FloatingActionButton.extended(
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const AddDish()));
-            },
-            label: Row(
-              children: [
-                Icon(
-                  Icons.add,
-                  size: SizeConfig.screenWidth! * 0.06,
-                ),
-                const Gap(10),
-                Text(
-                  'Add Dish',
-                  style: TextStyle(
-                      fontSize: SizeConfig.screenWidth! * 0.04,
-                      fontWeight: FontWeight.bold),
-                )
-              ],
-            )),
+        floatingActionButton: cartController.cartLength > 0
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  FloatingActionButton.extended(
+                      heroTag: 'cancelTag',
+                      onPressed: () {
+                        cartController.reserCart();
+                      },
+                      label: Row(
+                        children: [
+                          Icon(
+                            Icons.restore,
+                            size: SizeConfig.screenWidth! * 0.06,
+                          ),
+                          const Gap(10),
+                          Text(
+                            'Cancel',
+                            style: TextStyle(
+                                fontSize: SizeConfig.screenWidth! * 0.04,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      )),
+                  const Gap(20),
+                  FloatingActionButton.extended(
+                      heroTag: 'cartTag',
+                      onPressed: () {},
+                      label: Row(
+                        children: [
+                          Text(
+                            'Items : ',
+                            style: TextStyle(
+                                fontSize: SizeConfig.screenWidth! * 0.04,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const Gap(5),
+                          Text(
+                            cartController.cartLength.toString(),
+                            style: TextStyle(
+                                fontSize: SizeConfig.screenWidth! * 0.04,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const Gap(10),
+                          Text(
+                            '||',
+                            style: TextStyle(
+                                fontSize: SizeConfig.screenWidth! * 0.04,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const Gap(10),
+                          Text(
+                            'Price : ₹ ',
+                            style: TextStyle(
+                                fontSize: SizeConfig.screenWidth! * 0.04,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const Gap(5),
+                          Text(
+                            cartController.totalCartPrice.toString(),
+                            style: TextStyle(
+                                fontSize: SizeConfig.screenWidth! * 0.04,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ))
+                ],
+              )
+            : const SizedBox(),
       );
     });
   }
