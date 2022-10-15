@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fresh_moment/configs/size_configs.dart';
 import 'package:fresh_moment/controller/dish_controller.dart';
 import 'package:fresh_moment/screen/add_dish.dart';
+import 'package:fresh_moment/screen/bluetooth_settings.dart';
 import 'package:fresh_moment/widget/loader.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -37,13 +38,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: SizeConfig.screenWidth! * 0.05,
                   letterSpacing: 1.5,
                   fontWeight: FontWeight.bold)),
-          leading: Icon(
-            Icons.circle_rounded,
-            color: cartController.deviceConnected.value
-                ? Colors.green
-                : Colors.red,
-            size: SizeConfig.screenWidth! * 0.06,
-          ),
+          leading: IconButton(
+              onPressed: () {
+                Get.to(const BluetoothSettings());
+              },
+              icon: Icon(
+                Icons.bluetooth,
+                color: Colors.red,
+                size: SizeConfig.screenWidth! * 0.06,
+              )),
           actions: [
             IconButton(
               onPressed: () {

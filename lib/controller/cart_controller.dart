@@ -15,7 +15,7 @@ class CartController extends GetxController {
   RxList cartList = [].obs;
   Map itemCount = {}.obs;
   double totalPrice = 0.0;
-  RxBool deviceConnected = false.obs;
+  int slNo = 1;
 
   DishController dishController = Get.find<DishController>();
 
@@ -47,8 +47,15 @@ class CartController extends GetxController {
     totalPrice = 0.0;
   }
 
+  incrementSlNo() async {
+    slNo = GetStorage().read('Sl_No') ?? 1;
+    slNo++;
+    await GetStorage().write('Sl_No', slNo);
+  }
+
   get cartLength => cartList.length;
   get totalCartPrice => totalPrice;
+  get slNumber => slNo;
 
   generateBill() async {
     List<dynamic>? blueDevice =
@@ -83,6 +90,7 @@ class CartController extends GetxController {
         );
         Get.to(const SelectPairedDevice());
       } else {
+        incrementSlNo();
         resetCart();
       }
     }
@@ -95,7 +103,7 @@ class CartController extends GetxController {
 
     bytes += ticket.row([
       PosColumn(
-        text: 'Sl No. : 01 ',
+        text: 'Sl No. : $slNo ',
         width: 4,
         styles: const PosStyles(
           align: PosAlign.left,
@@ -112,64 +120,64 @@ class CartController extends GetxController {
       ),
     ]);
 
-    bytes += ticket.hr();
+    // bytes += ticket.hr();
 
-    bytes += ticket.text('Fresh Moment',
-        styles: const PosStyles(
-          align: PosAlign.center,
-          bold: true,
-          width: PosTextSize.size2,
-        ));
+    // bytes += ticket.text('Fresh Moment',
+    //     styles: const PosStyles(
+    //       align: PosAlign.center,
+    //       bold: true,
+    //       width: PosTextSize.size2,
+    //     ));
 
-    bytes += ticket.text(
-      'Jail Maidan, Lalgola - 742148',
-      styles: const PosStyles(
-        align: PosAlign.center,
-        bold: true,
-      ),
-    );
+    // bytes += ticket.text(
+    //   'Jail Maidan, Lalgola - 742148',
+    //   styles: const PosStyles(
+    //     align: PosAlign.center,
+    //     bold: true,
+    //   ),
+    // );
 
-    bytes += ticket.hr();
-    List cart = cartList.toSet().toList();
-    for (var cartItemId in cart) {
-      Dish dish = dishController.dishList
-          .firstWhere((element) => element.id == cartItemId);
+    // bytes += ticket.hr();
+    // List cart = cartList.toSet().toList();
+    // for (var cartItemId in cart) {
+    //   Dish dish = dishController.dishList
+    //       .firstWhere((element) => element.id == cartItemId);
 
-      bytes += ticket.row([
-        PosColumn(
-          text: dish.dishName + ' ',
-          width: 10,
-          styles: const PosStyles(align: PosAlign.left),
-        ),
-        PosColumn(
-          width: 2,
-          text: 'x ' + itemCount[cartItemId].toString(),
-          styles: const PosStyles(align: PosAlign.right),
-        ),
-      ]);
-    }
+    //   bytes += ticket.row([
+    //     PosColumn(
+    //       text: dish.dishName + ' ',
+    //       width: 10,
+    //       styles: const PosStyles(align: PosAlign.left),
+    //     ),
+    //     PosColumn(
+    //       width: 2,
+    //       text: 'x ' + itemCount[cartItemId].toString(),
+    //       styles: const PosStyles(align: PosAlign.right),
+    //     ),
+    //   ]);
+    // }
 
-    bytes += ticket.hr();
+    // bytes += ticket.hr();
 
-    bytes += ticket.row([
-      PosColumn(
-        width: 8,
-        text: 'Total Amount : ',
-        styles: const PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        width: 4,
-        text: 'Rs. ' + totalPrice.toStringAsFixed(2),
-        styles: const PosStyles(align: PosAlign.right),
-      )
-    ]);
+    // bytes += ticket.row([
+    //   PosColumn(
+    //     width: 8,
+    //     text: 'Total Amount : ',
+    //     styles: const PosStyles(align: PosAlign.left),
+    //   ),
+    //   PosColumn(
+    //     width: 4,
+    //     text: 'Rs. ' + totalPrice.toStringAsFixed(2),
+    //     styles: const PosStyles(align: PosAlign.right),
+    //   )
+    // ]);
 
-    bytes += ticket.hr();
+    // bytes += ticket.hr();
 
-    bytes += ticket.text('Thank you!',
-        styles: const PosStyles(align: PosAlign.center, bold: true));
+    // bytes += ticket.text('Thank you!',
+    //     styles: const PosStyles(align: PosAlign.center, bold: true));
 
-    bytes += ticket.hr(ch: '=', linesAfter: 1);
+    // bytes += ticket.hr(ch: '=', linesAfter: 1);
     bytes += ticket.cut();
     return bytes;
   }

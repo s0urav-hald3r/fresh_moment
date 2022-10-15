@@ -36,12 +36,19 @@ class _SelectPairedDeviceState extends State<SelectPairedDevice> {
     setState(() {
       _isLoading = true;
     });
-    await _bluetooth.startScan(pairedDevices: false);
+    _bluetooth.startScan().whenComplete(() => debugPrint('Completed'));
     Future.delayed(const Duration(seconds: 2), (() {
       setState(() {
         _isLoading = false;
       });
     }));
+  }
+
+  @override
+  void dispose() {
+    _bluetooth.stopScan();
+    _bluetooth.close();
+    super.dispose();
   }
 
   @override
@@ -154,7 +161,6 @@ class _SelectPairedDeviceState extends State<SelectPairedDevice> {
       blueDevice.address,
       blueDevice.paired,
     ];
-    cartController.deviceConnected.value = true;
     await GetStorage()
         .write(SizeConfig.bluetoothDeviceDetails, deviceDetails)
         .whenComplete(() => Get.back());
