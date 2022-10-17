@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fresh_moment/configs/size_configs.dart';
+import 'package:fresh_moment/controller/bluetooth_controller.dart';
 import 'package:fresh_moment/controller/dish_controller.dart';
 import 'package:fresh_moment/screen/add_dish.dart';
 import 'package:fresh_moment/screen/bluetooth_settings.dart';
@@ -20,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DishController dishController = Get.find<DishController>();
   CartController cartController = Get.find<CartController>();
+  BluetoothxController bluetoothxController = Get.find<BluetoothxController>();
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig.init(context);
     return Obx(() {
       return Scaffold(
         appBar: AppBar(
@@ -44,7 +47,9 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               icon: Icon(
                 Icons.bluetooth,
-                color: Colors.red,
+                color: bluetoothxController.isDeviceOn.value
+                    ? Colors.green
+                    : Colors.red,
                 size: SizeConfig.screenWidth! * 0.06,
               )),
           actions: [

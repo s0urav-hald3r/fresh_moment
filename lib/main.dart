@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:fresh_moment/controller/bluetooth_controller.dart';
+import 'package:fresh_moment/controller/cart_controller.dart';
+import 'package:fresh_moment/controller/dish_controller.dart';
+import 'package:fresh_moment/screen/home_screen.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'configs/app_theme.dart';
-import 'screen/splash_screen.dart';
 
 void main() async {
   await GetStorage.init();
+  Get.lazyPut(() => DishController());
+  Get.lazyPut(() => CartController());
+  Get.lazyPut(() => BluetoothxController(), fenix: true);
   runApp(const MyApp());
 }
 
@@ -20,7 +26,7 @@ class MyApp extends StatelessWidget {
       title: 'Fresh Moment',
       debugShowCheckedModeBanner: false,
       theme: themeData,
-      home: const SplashScreen(),
+      home: const HomeScreen(),
     );
   }
 }

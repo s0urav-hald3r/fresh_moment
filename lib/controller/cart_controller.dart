@@ -15,7 +15,15 @@ class CartController extends GetxController {
   RxList cartList = [].obs;
   Map itemCount = {}.obs;
   double totalPrice = 0.0;
-  int slNo = 1;
+  RxDouble totalEarning = 0.0.obs;
+  int slNo = 0;
+  RxBool loading = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    slNo = GetStorage().read(SizeConfig.slNo) ?? 1;
+  }
 
   DishController dishController = Get.find<DishController>();
 
@@ -48,9 +56,17 @@ class CartController extends GetxController {
   }
 
   incrementSlNo() async {
-    slNo = GetStorage().read('Sl_No') ?? 1;
-    slNo++;
-    await GetStorage().write('Sl_No', slNo);
+    slNo = GetStorage().read(SizeConfig.slNo) ?? 1;
+    slNo += 1;
+    await GetStorage().write(SizeConfig.slNo, slNo);
+  }
+
+  resetTotalEaringsAndSerialNumer() async {
+    loading.value = true;
+    await GetStorage().remove(SizeConfig.slNo);
+    slNo = 1;
+    totalEarning.value = 0.0;
+    loading.value = false;
   }
 
   get cartLength => cartList.length;
@@ -90,6 +106,7 @@ class CartController extends GetxController {
         );
         Get.to(const SelectPairedDevice());
       } else {
+        totalEarning.value += totalPrice;
         incrementSlNo();
         resetCart();
       }

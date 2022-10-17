@@ -27,12 +27,47 @@ class _AddDishState extends State<AddDish> {
 
   DishController dishController = Get.find<DishController>();
 
-  void _imgFromGallery() async {
+  void _fromGallery() async {
+    XFile? pickedFile = await ImagePicker()
+        .pickImage(source: ImageSource.gallery, imageQuality: 50);
+    setState(() {
+      _image = pickedFile!.path;
+    });
+  }
+
+  void _fromCamera() async {
     XFile? pickedFile = await ImagePicker()
         .pickImage(source: ImageSource.camera, imageQuality: 50);
     setState(() {
       _image = pickedFile!.path;
     });
+  }
+
+  void _showPicker() {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Wrap(
+              children: [
+                ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: const Text('Photo Gallery'),
+                    onTap: () {
+                      _fromGallery();
+                      Navigator.of(context).pop();
+                    }),
+                ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: const Text('Camera'),
+                    onTap: () {
+                      _fromCamera();
+                      Navigator.of(context).pop();
+                    }),
+              ],
+            ),
+          );
+        });
   }
 
   @override
@@ -71,12 +106,12 @@ class _AddDishState extends State<AddDish> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      _imgFromGallery();
+                      _showPicker();
                     },
                     child: _image != null
                         ? Container(
                             width: SizeConfig.screenWidth,
-                            height: SizeConfig.screenWidth! * 0.5,
+                            height: SizeConfig.screenWidth! * 0.8,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 image: DecorationImage(
@@ -87,7 +122,7 @@ class _AddDishState extends State<AddDish> {
                                 color: Colors.grey[500],
                                 borderRadius: BorderRadius.circular(20)),
                             width: SizeConfig.screenWidth,
-                            height: SizeConfig.screenWidth! * 0.5,
+                            height: SizeConfig.screenWidth! * 0.8,
                             child: Icon(
                               Icons.camera_alt_rounded,
                               size: SizeConfig.screenWidth! * 0.25,

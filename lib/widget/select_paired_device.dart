@@ -1,10 +1,11 @@
-import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart' as fbb;
 import 'package:flutter_scan_bluetooth/flutter_scan_bluetooth.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../configs/size_configs.dart';
+import '../controller/bluetooth_controller.dart';
 import '../controller/cart_controller.dart';
 
 class SelectPairedDevice extends StatefulWidget {
@@ -16,16 +17,30 @@ class SelectPairedDevice extends StatefulWidget {
 
 class _SelectPairedDeviceState extends State<SelectPairedDevice> {
   final List<BluetoothDevice> _devices = [];
-  PrinterBluetooth? _selectedDevice;
   final FlutterScanBluetooth _bluetooth = FlutterScanBluetooth();
+  fbb.BluetoothManager bluetoothManager = fbb.BluetoothManager.instance;
 
   bool _isLoading = false;
   CartController cartController = Get.find<CartController>();
+  BluetoothxController bluetoothController = Get.find<BluetoothxController>();
 
   @override
   void initState() {
     super.initState();
+    bluetoothManager.state.listen((val) {
+      debugPrint('State Value : $val');
+      if (!mounted) return;
+      if (val == 12) {
+        bluetoothController.isDeviceOn.value = true;
+        debugPrint('Bluetooth Service On');
+        searchDevices();
+      } else if (val == 10) {
+        bluetoothController.isDeviceOn.value = false;
+        debugPrint('Bluetooth Service Off');
+      }
+    });
     _bluetooth.devices.listen((device) {
+      _devices.clear();
       setState(() {
         _devices.add(device);
       });
@@ -36,7 +51,7 @@ class _SelectPairedDeviceState extends State<SelectPairedDevice> {
     setState(() {
       _isLoading = true;
     });
-    _bluetooth.startScan().whenComplete(() => debugPrint('Completed'));
+    _bluetooth.startScan().whenComplete(() => debugPrint('Scan Completed'));
     Future.delayed(const Duration(seconds: 2), (() {
       setState(() {
         _isLoading = false;
@@ -75,46 +90,43 @@ class _SelectPairedDeviceState extends State<SelectPairedDevice> {
               )
             : _devices.isNotEmpty
                 ? SingleChildScrollView(
-                    child: Column(
-                      children:
-                          List<Widget>.generate(_devices.length, (int index) {
-                        return GestureDetector(
-                          onTap: () => _onSelectDevice(index),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  _devices[index].name,
-                                  style: TextStyle(
-                                    color: _selectedDevice?.address ==
-                                            _devices[index].address
-                                        ? Colors.blue
-                                        : Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
+                    child: Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Column(
+                        children:
+                            List<Widget>.generate(_devices.length, (int index) {
+                          return GestureDetector(
+                            onTap: () => _onSelectDevice(index),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    _devices[index].name,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  _devices[index].address,
-                                  style: TextStyle(
-                                    color: _selectedDevice?.address ==
-                                            _devices[index].address
-                                        ? Colors.blueGrey
-                                        : Colors.grey,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
+                                  const SizedBox(
+                                    height: 5,
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    _devices[index].address,
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      }),
+                          );
+                        }),
+                      ),
                     ),
                   )
                 : Center(
@@ -163,6 +175,10 @@ class _SelectPairedDeviceState extends State<SelectPairedDevice> {
     ];
     await GetStorage()
         .write(SizeConfig.bluetoothDeviceDetails, deviceDetails)
-        .whenComplete(() => Get.back());
+        .whenComplete(() {
+      bluetoothController.isDevicePresent.value = true;
+      debugPrint('Device Saved');
+      Get.back();
+    });
   }
 }

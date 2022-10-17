@@ -23,4 +23,5 @@ class SizeConfig {
   }
 
   static const bluetoothDeviceDetails = "bluetooth_device_details";
+  static const slNo = "serial_number";
 }
