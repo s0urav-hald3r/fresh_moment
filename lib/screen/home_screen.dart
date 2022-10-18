@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart';
 import 'package:fresh_moment/configs/size_configs.dart';
 import 'package:fresh_moment/controller/bluetooth_controller.dart';
 import 'package:fresh_moment/controller/dish_controller.dart';
@@ -22,11 +23,28 @@ class _HomeScreenState extends State<HomeScreen> {
   DishController dishController = Get.find<DishController>();
   CartController cartController = Get.find<CartController>();
   BluetoothxController bluetoothxController = Get.find<BluetoothxController>();
+  BluetoothManager bluetoothManager = BluetoothManager.instance;
 
   @override
   void initState() {
     dishController.restoreDish();
+    bluetoothManager.state.listen((val) {
+      debugPrint('State Value : $val');
+      if (!mounted) return;
+      if (val == 12) {
+        bluetoothxController.isDeviceOn.value = true;
+        debugPrint('Bluetooth Service On');
+      } else if (val == 10) {
+        bluetoothxController.isDeviceOn.value = false;
+        debugPrint('Bluetooth Service Off');
+      }
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

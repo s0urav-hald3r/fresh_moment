@@ -1,6 +1,6 @@
 import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Image;
 import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart';
 import 'package:fresh_moment/configs/size_configs.dart';
 import 'package:fresh_moment/controller/dish_controller.dart';
@@ -94,9 +94,8 @@ class CartController extends GetxController {
       const PaperSize paper = PaperSize.mm80;
       final profile = await CapabilityProfile.load();
 
-      final PosPrintResult res = await _printerManager.printTicket(
-        (await printBill(paper, profile)),
-      );
+      final PosPrintResult res =
+          await _printerManager.printTicket((await printBill(paper, profile)));
 
       if (res.msg != 'Success') {
         Get.snackbar(
@@ -137,64 +136,82 @@ class CartController extends GetxController {
       ),
     ]);
 
-    // bytes += ticket.hr();
+    bytes += ticket.hr();
 
-    // bytes += ticket.text('Fresh Moment',
-    //     styles: const PosStyles(
-    //       align: PosAlign.center,
-    //       bold: true,
-    //       width: PosTextSize.size2,
-    //     ));
+    // Image assets
+    // final ByteData data = await rootBundle.load('assets/icon/icon.png');
+    // final Uint8List byte = data.buffer.asUint8List();
+    // final image = decodeImage(byte);
+    // ticket.image(image!);
 
-    // bytes += ticket.text(
-    //   'Jail Maidan, Lalgola - 742148',
-    //   styles: const PosStyles(
-    //     align: PosAlign.center,
-    //     bold: true,
-    //   ),
-    // );
+    // bytes += ticket.feed(1);
 
-    // bytes += ticket.hr();
-    // List cart = cartList.toSet().toList();
-    // for (var cartItemId in cart) {
-    //   Dish dish = dishController.dishList
-    //       .firstWhere((element) => element.id == cartItemId);
+    bytes += ticket.text('Fresh Moment',
+        styles: const PosStyles(
+          align: PosAlign.center,
+          bold: true,
+          width: PosTextSize.size2,
+        ));
 
-    //   bytes += ticket.row([
-    //     PosColumn(
-    //       text: dish.dishName + ' ',
-    //       width: 10,
-    //       styles: const PosStyles(align: PosAlign.left),
-    //     ),
-    //     PosColumn(
-    //       width: 2,
-    //       text: 'x ' + itemCount[cartItemId].toString(),
-    //       styles: const PosStyles(align: PosAlign.right),
-    //     ),
-    //   ]);
-    // }
+    bytes += ticket.text(
+      'Jail Maidan, Lalgola - (M) : 7797094088',
+      styles: const PosStyles(
+        align: PosAlign.center,
+        bold: true,
+        width: PosTextSize.size1,
+      ),
+    );
 
-    // bytes += ticket.hr();
+    bytes += ticket.hr();
+    List cart = cartList.toSet().toList();
+    for (var cartItemId in cart) {
+      Dish dish = dishController.dishList
+          .firstWhere((element) => element.id == cartItemId);
 
-    // bytes += ticket.row([
-    //   PosColumn(
-    //     width: 8,
-    //     text: 'Total Amount : ',
-    //     styles: const PosStyles(align: PosAlign.left),
-    //   ),
-    //   PosColumn(
-    //     width: 4,
-    //     text: 'Rs. ' + totalPrice.toStringAsFixed(2),
-    //     styles: const PosStyles(align: PosAlign.right),
-    //   )
-    // ]);
+      bytes += ticket.row([
+        PosColumn(
+          text: dish.dishName + ' ',
+          width: 10,
+          styles: const PosStyles(
+              align: PosAlign.left, bold: true, width: PosTextSize.size1),
+        ),
+        PosColumn(
+          width: 2,
+          text: 'x ' + itemCount[cartItemId].toString(),
+          styles: const PosStyles(
+              align: PosAlign.right, bold: true, width: PosTextSize.size1),
+        ),
+      ]);
+    }
 
-    // bytes += ticket.hr();
+    bytes += ticket.hr();
 
-    // bytes += ticket.text('Thank you!',
-    //     styles: const PosStyles(align: PosAlign.center, bold: true));
+    bytes += ticket.row([
+      PosColumn(
+        width: 8,
+        text: 'Total Amount : ',
+        styles: const PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        width: 4,
+        text: 'Rs. ' + totalPrice.toStringAsFixed(2),
+        styles: const PosStyles(
+          align: PosAlign.right,
+          bold: true,
+          width: PosTextSize.size1,
+        ),
+      )
+    ]);
 
-    // bytes += ticket.hr(ch: '=', linesAfter: 1);
+    bytes += ticket.hr();
+
+    bytes += ticket.text('Thank you! Visit Again',
+        styles: const PosStyles(align: PosAlign.center, bold: true));
+
+    bytes += ticket.text('- Choton Da',
+        styles: const PosStyles(align: PosAlign.center, bold: true));
+
+    bytes += ticket.hr();
     bytes += ticket.cut();
     return bytes;
   }
