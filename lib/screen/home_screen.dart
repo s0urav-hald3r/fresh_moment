@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ? SizeConfig.screenWidth! * 0.4
                               : 10),
                       child: Wrap(
-                        spacing: SizeConfig.screenWidth! * 0.0245,
+                        spacing: SizeConfig.screenWidth! * 0.02,
                         runSpacing: SizeConfig.screenWidth! * 0.03,
                         children: dishController.dishList
                             .map(
