@@ -23,6 +23,7 @@ class CartController extends GetxController {
   void onInit() {
     super.onInit();
     slNo = GetStorage().read(SizeConfig.slNo) ?? 1;
+    totalEarning.value = GetStorage().read(SizeConfig.totalEarnings) ?? 0.0;
   }
 
   DishController dishController = Get.find<DishController>();
@@ -55,15 +56,19 @@ class CartController extends GetxController {
     totalPrice = 0.0;
   }
 
-  incrementSlNo() async {
+  Future incrementSlNo() async {
     slNo = GetStorage().read(SizeConfig.slNo) ?? 1;
+    totalEarning.value = GetStorage().read(SizeConfig.totalEarnings) ?? 0.0;
     slNo += 1;
+    totalEarning.value += totalPrice;
     await GetStorage().write(SizeConfig.slNo, slNo);
+    await GetStorage().write(SizeConfig.totalEarnings, totalEarning.value);
   }
 
   resetTotalEaringsAndSerialNumer() async {
     loading.value = true;
     await GetStorage().remove(SizeConfig.slNo);
+    await GetStorage().remove(SizeConfig.totalEarnings);
     slNo = 1;
     totalEarning.value = 0.0;
     loading.value = false;
@@ -105,9 +110,7 @@ class CartController extends GetxController {
         );
         Get.to(const SelectPairedDevice());
       } else {
-        totalEarning.value += totalPrice;
-        incrementSlNo();
-        resetCart();
+        incrementSlNo().then((value) => resetCart());
       }
     }
   }
@@ -138,20 +141,14 @@ class CartController extends GetxController {
 
     bytes += ticket.hr();
 
-    // Image assets
-    // final ByteData data = await rootBundle.load('assets/icon/icon.png');
-    // final Uint8List byte = data.buffer.asUint8List();
-    // final image = decodeImage(byte);
-    // ticket.image(image!);
-
-    // bytes += ticket.feed(1);
-
     bytes += ticket.text('Fresh Moment',
         styles: const PosStyles(
           align: PosAlign.center,
           bold: true,
           width: PosTextSize.size2,
         ));
+
+    bytes += ticket.emptyLines(1);
 
     bytes += ticket.text(
       'Jail Maidan, Lalgola - (M) : 7797094088',
@@ -163,6 +160,7 @@ class CartController extends GetxController {
     );
 
     bytes += ticket.hr();
+
     List cart = cartList.toSet().toList();
     for (var cartItemId in cart) {
       Dish dish = dishController.dishList
@@ -202,6 +200,8 @@ class CartController extends GetxController {
         ),
       )
     ]);
+
+    bytes += ticket.feed(1);
 
     bytes += ticket.hr();
 

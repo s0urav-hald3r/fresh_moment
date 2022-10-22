@@ -37,7 +37,7 @@ class _SelectPairedDeviceState extends State<SelectPairedDevice> {
       _isLoading = true;
     });
     _bluetooth
-        .startScan(pairedDevices: false)
+        .startScan(pairedDevices: true)
         .whenComplete(() => debugPrint('Scan Completed...'));
     Future.delayed(const Duration(seconds: 2), (() {
       setState(() {

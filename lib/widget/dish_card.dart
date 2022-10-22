@@ -73,8 +73,10 @@ class DishCard extends StatelessWidget {
                       image: FileImage(File(dish.imageUrl))))),
         ),
         const Gap(5),
-        SizedBox(
-          width: SizeConfig.screenWidth! * 0.3,
+        Container(
+          color: Colors.transparent,
+          width: SizeConfig.screenWidth! * 0.275,
+          height: SizeConfig.screenWidth! * 0.125,
           child: Text(dish.dishName,
               textAlign: TextAlign.center,
               style: TextStyle(
